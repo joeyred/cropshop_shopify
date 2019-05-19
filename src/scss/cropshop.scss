@@ -1,0 +1,11 @@
+@charset 'utf-8';
+
+@import 'settings';
+@import 'foundation';
+@import 'motion-ui';
+
+.cropshop__scope--container {
+  // Global styles
+  @include foundation-global-styles;
+  @include foundation-reveal;
+}
