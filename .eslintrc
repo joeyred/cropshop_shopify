@@ -12,6 +12,7 @@
     "shopify/react-prefer-private-members": [0, "never"],
     "react/no-access-state-in-setstate": [0, "never"],
     "react/prop-types": [0, "never"],
-    "shopify/jsx-no-complex-expressions": [0, "never"]
+    "shopify/jsx-no-complex-expressions": [0, "never"],
+    "no-warning-comments": "warn",
   }
 }
