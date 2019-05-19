@@ -1,12 +1,14 @@
 const withCSS = require('@zeit/next-css');
 const webpack = require('webpack');
 
-const apiKey =  JSON.stringify(process.env.SHOPIFY_API_KEY)
+const serverConfig = require('./server/config');
+
+const apiKey = JSON.stringify(serverConfig.shopify.apiKey);
 module.exports = withCSS({
-  webpack: config => {
+  webpack: (config) => {
     const env = { API_KEY: apiKey };
 
     config.plugins.push(new webpack.DefinePlugin(env));
     return config;
-  }
+  },
 });
