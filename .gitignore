@@ -1,3 +1,6 @@
 node_modules
 .env
+
+# Ignore built files
 .next
+public/asset-injections/assets
