@@ -76,8 +76,16 @@ app.prepare().then(() => {
         'read_themes', 'write_themes',
       ],
       // `ctx` means "context" in koa
-      // this basically combines response and request objects express would use
-      async afterAuth(ctx) {
+      // this basically combines response and request objects express would use.
+      //
+      // WARNING - `async` was removed due to no use of `await`.
+      //            The example shown by shopify uses logic that has the use of `await`
+      //            in the `afterAuth` method, and thus `async` was used.
+      //
+      //            It is currently unkown if removing `async` will present any problems
+      //            or not.
+      // TODO - Test install with `async` removed from `afterAuth`.
+      afterAuth(ctx) {
         // const { shop, accessToken } = ctx.session;
         const { shop } = ctx.session;
         ctx.cookies.set('shopOrigin', shop, { httpOnly: false });

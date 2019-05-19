@@ -63,6 +63,7 @@
     "react-apollo": "^2.5.4",
     "react-dom": "^16.8.6",
     "store-js": "^2.0.4",
+    "webpack": "^4.31.0",
     "yargs": "^13.2.4"
   },
   "devDependencies": {

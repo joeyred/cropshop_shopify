@@ -1,8 +1,8 @@
 const gulp = require('gulp');
 const $ = require('gulp-load-plugins')({
   rename: {
-    'gulp-merge-media-queries': 'mmq'
-  }
+    'gulp-merge-media-queries': 'mmq',
+  },
 });
 // AVAILABLE GULP PLUGINS
 //
@@ -34,7 +34,7 @@ const PATHS = {
   foundation: {
     scss: [
       'node_modules/foundation-sites/scss',
-      'node_modules/motion-ui/src'
+      'node_modules/motion-ui/src',
     ],
     js: [
       // Foundation Core
@@ -78,7 +78,7 @@ function styles() {
       browsers: COMPATABILITY,
     }))
     .pipe($.mmq({
-      log: true
+      log: true,
     }))
     .pipe($.if(!PRODUCTION, $.sourcemaps.write('./')))
     .pipe($.if(PRODUCTION, $.cleanCss({
@@ -91,13 +91,12 @@ function styles() {
       // 2 - operate at rules or multiple properties level, e.g. can remove duplicate
       //     rules, remove properties redefined further down a stylesheet, or restructure
       //     rules by moving them around.
-      level: 2
+      level: 2,
     })))
-    .pipe($.if(PRODUCTION, $.rename(function(path) {
+    .pipe($.if(PRODUCTION, $.rename((path) => {
       path.basename = `${path.basename}.min`;
     })))
-    .pipe(gulp.dest(PATHS.public.assetInjections.assets))
-  ;
+    .pipe(gulp.dest(PATHS.public.assetInjections.assets));
 }
 
 // Scripts
@@ -105,27 +104,24 @@ function foundationScripts() {
   return gulp.src(PATHS.foundation.js)
     .pipe($.sourcemaps.init())
     .pipe($.babel())
-    .on('error', function(e) {
-      console.error('\x1b[31m%s\x1b[0m', e.message);
-      console.log(e.codeFrame);
-      this.emit('end');
+    .on('error', (error) => {
+      console.error('\x1b[31m%s\x1b[0m', error.message);
+      console.log(error.codeFrame);
+      this.emit('end'); // eslint-disable-line babel/no-invalid-this
     })
     .pipe($.if(PRODUCTION, $.concat('app.min.js'), $.concat('app.js')))
     .pipe($.if(PRODUCTION, $.uglify()))
     .pipe($.if(!PRODUCTION, $.sourcemaps.write('./')))
-    .pipe(gulp.dest(PATHS.public.assetInjections.assets))
-  ;
+    .pipe(gulp.dest(PATHS.public.assetInjections.assets));
 }
 
 // CropShop scripts
 // TODO add proper paths once CropShop is published to npm and imported into this app
-function cropshopScripts() {
-  return gulp.src('')
-    .pipe(gulp.dest(PATHS.public.assetInjections.assets))
-  ;
-}
+// function cropshopScripts() {
+//   return gulp.src('')
+//     .pipe(gulp.dest(PATHS.public.assetInjections.assets));
+// }
 
 // Build series
 gulp.task('build',
-  gulp.series(clean, gulp.parallel(styles, foundationScripts))
-);
+  gulp.series(clean, gulp.parallel(styles, foundationScripts)));
