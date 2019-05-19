@@ -5,7 +5,7 @@ const {
   SHOPIFY_API_KEY,
   API_VERSION,
   TUNNEL_URL,
-} = process.env;
+} = process.env; // eslint-disable-line no-process-env
 
 module.exports = {
   shopify: {

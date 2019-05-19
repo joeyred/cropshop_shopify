@@ -16,30 +16,25 @@ const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: graphQLProxy } = require('@shopify/koa-shopify-graphql-proxy');
 const { ApiVersion } = require('@shopify/koa-shopify-graphql-proxy');
 
+const config = require('./server/config');
+
 // Node.js stuff
 // TODO Replace with config
-const port = parseInt(process.env.PORT, 10) || 3000;
-const dev = process.env.NODE_ENV !== 'production';
+const port = parseInt(process.env.PORT, 10) || 3000; // eslint-disable-line no-process-env
+const dev = (process.env.NODE_ENV !== 'production'); // eslint-disable-line no-process-env
 // NextJS setup
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
 // Axios for API calls
-const axios = require('axios');
-const _ = require('lodash');
+// const axios = require('axios');
+// const _ = require('lodash');
 
 // Utils
 const Routes = require('./server/utils/koa-routes');
 
 // Routes
 const install = require('./server/routes/install');
-
-// TODO Replace with config
-const {
-  SHOPIFY_API_SECRET_KEY,
-  SHOPIFY_API_KEY,
-  API_VERSION
-} = process.env;
 
 // NOTE / WARNING //
 // In this context `app` refers to what NextJS is doing, and `server` refers to what is
@@ -59,18 +54,12 @@ app.prepare().then(() => {
   server.use(session(server));
 
   // TODO ???? why is this here?
-  server.keys = [SHOPIFY_API_SECRET_KEY];
-
-  // TODO Replace route additions with a method that not only adds the route and
-  // middleware, but adds the path to a method that outputs conditionals to properly
-  // isolate these routes from NextJS
+  server.keys = [config.shopify.apiSecretKey];
 
   // Set up non-NextJS controlled routes
   // router.use('/install', install);
 
   routes.registerKoaRoute('/install', install);
-
-
 
   server.use(serve('./public'));
 
@@ -78,18 +67,19 @@ app.prepare().then(() => {
   server.use(
     // This runs for /auth
     createShopifyAuth({
-      apiKey: SHOPIFY_API_KEY,
-      secret: SHOPIFY_API_SECRET_KEY,
+      apiKey: config.shopify.apiKey,
+      secret: config.shopify.apiSecretKey,
       // This defines what the app can sccess through the API
       // These are basically permissions
       scopes: [
         'read_products', 'write_products',
-        'read_themes', 'write_themes'
+        'read_themes', 'write_themes',
       ],
       // `ctx` means "context" in koa
       // this basically combines response and request objects express would use
       async afterAuth(ctx) {
-        const { shop, accessToken } = ctx.session;
+        // const { shop, accessToken } = ctx.session;
+        const { shop } = ctx.session;
         ctx.cookies.set('shopOrigin', shop, { httpOnly: false });
 
         ctx.redirect('/install');
@@ -97,14 +87,12 @@ app.prepare().then(() => {
     }),
   );
 
-  // server.use('/install', install);
-
   // This must be updated at least once every 9 months to use most
   // current and supported API version
   //
   // @link https://developers.shopify.com/tutorials/
   // build-a-shopify-app-with-node-and-react/fetch-data-with-apollo#set-up-graphql
-  server.use(graphQLProxy({version: ApiVersion.April19}));
+  server.use(graphQLProxy({ version: ApiVersion.April19 }));
 
   // WARNING
   // Everything after this point will require authentication.
@@ -135,4 +123,4 @@ app.prepare().then(() => {
   server.listen(port, () => {
     console.log(`> Ready on http://localhost:${port}`);
   });
-});
+}).catch(error);
